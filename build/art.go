@@ -95,11 +95,11 @@ func globalFlags(ctx android.LoadHookContext) ([]string, []string) {
 			ctx.Config().IsEnvFalse("ART_USE_GENERATIONAL_GC")) {
 			cflags = append(cflags, "-DART_USE_GENERATIONAL_GC=1")
 		}
-		// Force CC only if ART_USE_READ_BARRIER was set to true explicitly during
-		// build time.
-		if ctx.Config().IsEnvTrue("ART_USE_READ_BARRIER") {
-			cflags = append(cflags, "-DART_FORCE_USE_READ_BARRIER=1")
-		}
+		// Force CC GC at compile time. The build host has userfaultfd so host dex2oat
+		// would otherwise pick CMC and compile boot.art without read barriers, while the
+		// target kernel (no userfaultfd) uses CC and expects them, mismatching boot.art.
+		cflags = append(cflags, "-DART_FORCE_USE_READ_BARRIER=1")
+		asflags = append(asflags, "-DART_FORCE_USE_READ_BARRIER=1")
 		tlab = true
 	} else if gcType == "CMC" {
 		tlab = true

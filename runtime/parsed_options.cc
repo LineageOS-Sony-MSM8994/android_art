@@ -745,8 +745,14 @@ bool ParsedOptions::DoParse(const RuntimeOptions& options,
     bool low_memory_mode_ = args.Exists(M::LowMemoryMode);
 
     if (background_collector_type_ == gc::kCollectorTypeNone) {
-      background_collector_type_ = low_memory_mode_ ?
-          gc::kCollectorTypeSS : gc::kCollectorTypeHomogeneousSpaceCompact;
+      // heap.cc requires the background collector to be CCBackground when read barriers
+      // are in use; the upstream HomogeneousSpaceCompact/SS defaults would abort zygote.
+      if (gUseReadBarrier) {
+        background_collector_type_ = gc::kCollectorTypeCCBackground;
+      } else {
+        background_collector_type_ = low_memory_mode_ ?
+            gc::kCollectorTypeSS : gc::kCollectorTypeHomogeneousSpaceCompact;
+      }
     }
 
     args.Set(M::BackgroundGc, BackgroundGcOption { background_collector_type_ });
