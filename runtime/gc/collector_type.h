@@ -69,7 +69,12 @@ enum CollectorType {
 std::ostream& operator<<(std::ostream& os, CollectorType collector_type);
 
 static constexpr CollectorType kCollectorTypeDefault =
-#if ART_DEFAULT_GC_TYPE_IS_CMC
+// With ART_FORCE_USE_READ_BARRIER the runtime forces gUseReadBarrier and heap.cc
+// requires the foreground collector to be CC, so the default must be CC too or
+// zygote aborts in the Heap constructor.
+#if defined(ART_FORCE_USE_READ_BARRIER)
+    kCollectorTypeCC
+#elif ART_DEFAULT_GC_TYPE_IS_CMC
     kCollectorTypeCMC
 #elif ART_DEFAULT_GC_TYPE_IS_SS
     kCollectorTypeSS
