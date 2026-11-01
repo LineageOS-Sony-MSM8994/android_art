@@ -39,7 +39,7 @@ int memfd_create(const char* name, unsigned int flags) {
   // Check kernel version supports memfd_create(). Some older kernels segfault executing
   // memfd_create() rather than returning ENOSYS (b/116769556).
   static constexpr int kRequiredMajor = 3;
-  static constexpr int kRequiredMinor = 17;
+  static constexpr int kRequiredMinor = 10;
   struct utsname uts;
   int major, minor;
   if (uname(&uts) != 0 ||
