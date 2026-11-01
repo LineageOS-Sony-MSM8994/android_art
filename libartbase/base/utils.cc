@@ -183,7 +183,7 @@ bool CacheOperationsMaySegFault() {
   //
   // This behaviour means we should avoid the dual view JIT on the device. This is just
   // an issue when running tests on devices that have an old kernel.
-  return !IsKernelVersionAtLeast(3, 12);
+  return !IsKernelVersionAtLeast(3, 10);
 #else
   return false;
 #endif
